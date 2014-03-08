@@ -7,6 +7,7 @@
 //
 
 #import "HLOAppDelegate.h"
+#import "Ono.h"
 
 @implementation HLOAppDelegate
 
@@ -16,6 +17,39 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+
+
+    NSURL *url = [NSURL URLWithString:@"http://www.cookpad.com"];
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *task = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){
+        if (error) {
+            NSLog(@"error: %@", [error localizedDescription]);
+            return;
+        }
+
+        if ([(NSHTTPURLResponse *)response statusCode] == 200) {
+            NSError *localError = nil;
+            ONOXMLDocument *doc = [ONOXMLDocument HTMLDocumentWithData:data error:&localError];
+            if (localError) {
+                NSLog(@"error: %@", [localError localizedDescription]);
+                return;
+            }
+
+            [doc enumerateElementsWithXPath:@"//div[@id=\"past_featured_content\"]//li/a"
+                                      block:^(ONOXMLElement *item){
+                                          NSString *title = [[item stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+                                          NSLog(@"%@ - %@", title, item.attributes[@"href"]);
+                                      }];
+
+            // not working...
+            [doc enumerateElementsWithCSS:@"#past_featured_content li a" block:^(ONOXMLElement *item){
+                NSString *title = [[item stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+                NSLog(@"%@ - %@", title, item.attributes[@"href"]);
+            }];
+        }
+    }];
+    [task resume];
+
     return YES;
 }
 
