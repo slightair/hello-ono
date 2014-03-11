@@ -9,6 +9,6 @@ end
 
 puts
 
-doc.css('#past_featured_content li a').each do |item|
+doc.css('div#past_featured_content li a').each do |item|
   puts "#{item.text.chomp} - #{item.attributes['href'].text}"
 end

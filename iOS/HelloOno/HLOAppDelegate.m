@@ -35,17 +35,19 @@
                 return;
             }
 
+            NSLog(@"XPath");
             [doc enumerateElementsWithXPath:@"//div[@id=\"past_featured_content\"]//li/a"
                                       block:^(ONOXMLElement *item){
                                           NSString *title = [[item stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
                                           NSLog(@"%@ - %@", title, item.attributes[@"href"]);
                                       }];
 
-            // not working...
-            [doc enumerateElementsWithCSS:@"#past_featured_content li a" block:^(ONOXMLElement *item){
-                NSString *title = [[item stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-                NSLog(@"%@ - %@", title, item.attributes[@"href"]);
-            }];
+            NSLog(@"CSS");
+            [doc enumerateElementsWithCSS:@"div#past_featured_content li a"
+                                    block:^(ONOXMLElement *item){
+                                        NSString *title = [[item stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+                                        NSLog(@"%@ - %@", title, item.attributes[@"href"]);
+                                    }];
         }
     }];
     [task resume];
